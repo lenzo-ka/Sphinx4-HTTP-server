@@ -1,5 +1,8 @@
 # Sphinx4-HTTP-server
 
+NOTE: this repo is forked, and extra notes are included in-line below for using your own acoustic models from SphinxTrain, and some notes for homebrew on macOS
+
+
 A simple speech-to-text HTTP server. It uses Jetty as the server component and Sphinx4 as the speech-to-text library.
 
 ## Requirements
@@ -7,6 +10,13 @@ This project is build using Maven. Maven can be installed using:
 ```
 $ apt-get install maven
 ```
+
+or, on macOS,
+
+```
+# brew install maven
+```
+
 It also requires the program FFMPEG with version 1.1 or higher. It expects FFMPEG to be located in /usr/bin, but this can be configured.
 FFMPEG can be downloaded at: https://ffmpeg.org/download.html
 
@@ -14,6 +24,15 @@ It is also possible to get the latest version by:
 ```
 $ git clone https://git.ffmpeg.org/ffmpeg.git ffmpeg
 ```
+
+or, on macOS,
+
+```
+brew install ffmpeg
+```
+
+Note that if you are on macOS under homebrew, you will also need to set the `ffmpeg_path` as in Configuration below.
+
 ## Running the server
 
 You can run the server by executing the following commands in the root folder:
@@ -38,6 +57,9 @@ port=8081
 
 # The absolute path to a ffmpeg executable
 ffmpeg_path=/usr/bin/ffmpeg
+# On apple silicon with homebrew:
+#ffmpeg_path=/opt/homebrew/bin/ffmpeg
+#
 
 # The absolute path to the directory to write files to
 #data_folder_path=/edit/to/an/absolute/path/
@@ -120,5 +142,20 @@ If the server is set to use a chunked reply it will look like this:
 ```
 The JSON array will hold objects with every word uttered in the given audio file. It will also include timestamp of when the word was uttered relative to the start of the audio file. If the word is filler, e.g a sigh, the filler value will be true. The session-id can be used to give multiple audio files to the server, telling it that they belongg together. This can be done by including ```?session-id=<ID_HERE>``` in the URL. There is currently no difference in response, however. 
 
+## Using your own acoustic models
 
+If you have your own acoustic models, you can put them locally on the file system, and then
+change the locations of the acoustic model, dictionary, and language models in `src/main/java/org/jitsi/sphinx4http/server/SphinxConstants.java` from
+
+```
+    public final static String ACOUSTIC_MODEL_EN_US =
+            "resource:/edu/cmu/sphinx/models/en-us/en-us";
+```
+
+to something like
+
+```
+    public final static String ACOUSTIC_MODEL_EN_US =
+            "file:/path/to/models/model-16k-cd-40/hmm";
+```
 
